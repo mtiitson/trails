@@ -117,7 +117,7 @@ export default class GpxMap {
         this.clearScroll();
         this.viewAll.disable();
         this.switchTheme(this.options.theme);
-        this.requestBrowserLocation();
+        this.centerOnTallinn();
     }
 
     clearScroll() {
@@ -195,26 +195,25 @@ export default class GpxMap {
         }
     }
 
-    // Try to pull geo location from browser and center the map
-    requestBrowserLocation() {
-        navigator.geolocation.getCurrentPosition(pos => {
-            if (!this.scrolled && this.tracks.length === 0) {
-                this.map.panTo([pos.coords.latitude, pos.coords.longitude], {
-                    noMoveStart: true,
-                    animate: false,
-                });
-                // noMoveStart doesn't seem to have an effect, see Leaflet
-                // issue: https://github.com/Leaflet/Leaflet/issues/5396
-                this.clearScroll();
-            }
-        });
+    centerOnTallinn() {
+        if (!this.scrolled && this.tracks.length === 0) {
+            this.map.panTo([59.4369583, 24.7535305], {
+                noMoveStart: true,
+                animate: false,
+            });
+            // noMoveStart doesn't seem to have an effect, see Leaflet
+            // issue: https://github.com/Leaflet/Leaflet/issues/5396
+            this.clearScroll();
+        }
     }
 
-    addTrack(track) {
+    addTrack(track, unsaved) {
         this.viewAll.enable();
         let lineOptions = Object.assign({}, this.options.lineOptions);
 
-        if (lineOptions.detectColors) {
+        if (unsaved) {
+           lineOptions.color = '#fc3256'
+        } else if (lineOptions.detectColors) {
             if (/-(Hike|Walk)\.gpx/.test(track.filename)) {
                 lineOptions.color = '#ffc0cb';
             } else if (/-Run\.gpx/.test(track.filename)) {

@@ -2,11 +2,13 @@ import '../style.css';
 
 import GpxMap from './map';
 import {initialize} from './ui';
+import * as api from './api';
 
 
 function app() {
     let map = new GpxMap();
     initialize(map);
+    api.getTracks().then(({ data }) => data.forEach(it => map.addTrack(it))).catch(console.error);
 }
 
 

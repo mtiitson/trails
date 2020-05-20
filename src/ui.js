@@ -3,6 +3,10 @@ import picoModal from 'picomodal';
 import extractTracks from './track';
 import Image from './image';
 
+import * as api from './api';
+
+const allTracks = [];
+
 const AVAILABLE_THEMES = [
     'CartoDB.DarkMatter',
     'CartoDB.DarkMatterNoLabels',
@@ -23,7 +27,7 @@ const AVAILABLE_THEMES = [
 
 const MODAL_CONTENT = {
     help: `
-<h1>dérive</h1>
+<h1>Trails</h1>
 <h4>Drag and drop one or more GPX/TCX/FIT files or JPEG images here.</h4>
 <p>If you use Strava, go to your
 <a href="https://www.strava.com/athlete/delete_your_account">account download
@@ -31,18 +35,7 @@ page</a> and click "Request your archive". You'll get an email containing a ZIP
 file of all the GPS tracks you've logged so far. This can take several hours.
 </p>
 
-<p>All processing happens in your browser. Your files will not be uploaded or
-stored anywhere.</p>
-
-<blockquote>
-In a dérive one or more persons during a certain period drop their
-relations, their work and leisure activities, and all their other
-usual motives for movement and action, and let themselves be drawn by
-the attractions of the terrain and the encounters they find there.<cite><a
-href="http://library.nothingness.org/articles/SI/en/display/314">[1]</a></cite>
-</blockquote>
-
-<p>Code is available <a href="https://github.com/erik/derive">on GitHub</a>.</p>
+<p>Based on <a href="https://github.com/erik/derive">github.com/erik/derive</a>.</p>
 `,
 
     exportImage: `
@@ -90,7 +83,7 @@ function handleFileSelect(map, evt) {
         for (const track of await extractTracks(file)) {
             track.filename = file.name;
             tracks.push(track);
-            map.addTrack(track);
+            map.addTrack(track, true);
             modal.addSuccess();
         }
     };
@@ -110,6 +103,19 @@ function handleFileSelect(map, evt) {
     Promise.all(files.map(handleFile)).then(() => {
         map.center();
         modal.finished();
+        tracks.forEach(t => allTracks.push(t));
+        if (allTracks.length) {
+            const el = document.querySelector('#save');
+            el.style.display = 'block';
+            el.textContent = `Save ${allTracks.length}`;
+            el.onclick = () => {
+                el.setAttribute('disabled', true);
+                el.style.backgroundColor = 'gray';
+                el.textContent = `Saving...`;
+                window.localStorage.setItem('help', 'false');
+                api.saveTracks(allTracks).catch(window.alert).finally(() => location.reload());
+            }
+        }
     });
 }
 
@@ -119,7 +125,6 @@ function handleDragOver(evt) {
     evt.stopPropagation();
     evt.preventDefault();
 }
-
 
 function buildUploadModal(numFiles) {
     let numLoaded = 0;
@@ -389,7 +394,7 @@ export function showModal(type) {
 
 
 export function initialize(map) {
-    let modal = showModal('help');
+    let modal = window.localStorage.getItem('help') === 'false' ? { destroyed: true } : showModal('help');
 
     window.addEventListener('dragover', handleDragOver, false);
 

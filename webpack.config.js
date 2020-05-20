@@ -3,7 +3,7 @@ module.exports = {
     devtool: 'inline-source-map',
     mode: 'production',
     output: {
-        path: __dirname,
+        path: `${__dirname}/public`,
         filename: 'bundle.js'
     },
     module: {

@@ -1,0 +1,38 @@
+<!doctype html>
+
+<head>
+    <link rel="stylesheet" href="https://npmcdn.com/leaflet@1.0.0-rc.3/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-easybutton@2.0.0/src/easy-button.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <script src="bundle.js"></script>
+    <title>Trails</title>
+    <style>
+        .controls {
+            position: fixed;
+            bottom: 0;
+            padding: 16px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+        #save {
+            cursor: pointer;
+            width: 40em;
+            height: 3em;
+            background-color: #fc3256;
+            color: white;
+            text-transform: uppercase;
+            font-weight: bold;
+            border: 0;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="background-map"></div>
+    <div class="controls">
+       <button id="save">Save</button>
+    </div>
+</body>
