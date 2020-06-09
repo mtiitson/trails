@@ -112,7 +112,6 @@ function handleFileSelect(map, evt) {
                 el.setAttribute('disabled', true);
                 el.style.backgroundColor = 'gray';
                 el.textContent = `Saving...`;
-                window.localStorage.setItem('help', 'false');
                 api.saveTracks(allTracks).catch(window.alert).finally(() => location.reload());
             }
         }
@@ -394,7 +393,7 @@ export function showModal(type) {
 
 
 export function initialize(map) {
-    let modal = window.localStorage.getItem('help') === 'false' ? { destroyed: true } : showModal('help');
+    let modal = { destroyed: true };
 
     window.addEventListener('dragover', handleDragOver, false);
 
